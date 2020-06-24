@@ -127,12 +127,12 @@ for i, outer_code in list(enumerate(total_outer_code)):
 
     pattern_page = re.compile(r'<span class="name">(.*?)</span></a></span></div><div class="tag-container field-name">')
     pages = int(pattern_page.findall(res.text)[-1])
-    print(pages)
+    #print(pages)
 
 
-    pattern_code = re.compile(r'<img class="lazyload" width="200" height="282" data-src="https://t.nhentai.net/galleries/(.*?)/')
+    pattern_code = re.compile(r'data-src="https://t.nhentai.net/galleries/(.*?)/')
     inter_code = int(pattern_code.findall(res.text)[0])
-    print(inter_code)
+    #print(inter_code)
 
 
     pattern_dir = re.compile(r'<h2 class="title">(.*?)</h2>')
@@ -145,17 +145,33 @@ for i, outer_code in list(enumerate(total_outer_code)):
     for single_name in three_name:
         subFolder += single_name
 
-    print(subFolder)
+    if len(three_name) == 0:
+        pattern_dir = re.compile(r'<h1 class="title">(.*?)</h1>')
+        dir_name_set = str(pattern_dir.findall(res.text)[0])
+        #print(subFolder)
+
+        subFolder = ""
+        pattern_three_name = re.compile(r'>(.*?)</span>')
+        three_name = pattern_three_name.findall(dir_name_set)
+        for single_name in three_name:
+            subFolder += single_name
+    
+    if len(three_name) == 0:
+        subFolder = str(outer_code)
 
     subFolder = subFolder.replace('?', '')
-    subFolder = subFolder.replace('!', '')
     subFolder = subFolder.replace('*', '')
     subFolder = subFolder.replace('"', '')
     subFolder = subFolder.replace(':', '')
     subFolder = subFolder.replace('/', ' ')
-    subFolder = subFolder.replace("	", "")
-    #subFolder = subFolder.replace(' ', '_')
+    subFolder = subFolder.replace('\\', ' ')
+    subFolder = subFolder.replace('<', '{')
+    subFolder = subFolder.replace('>', '}')
+    subFolder = subFolder.replace('|', ' ')
     #subFolder = subFolder.replace('.', '')
+
+    #print(subFolder)
+    #exit()
 
     #soup.find_all('div', id = 'info')
     # if not os.path.exists(outputFolder):
