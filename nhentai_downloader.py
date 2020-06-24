@@ -100,6 +100,7 @@ log_f = open(logFolder + "/output.log", 'w')
 if args.l == "0":
     outer_code = input(">>> Input: ")
     total_outer_code.append(outer_code)
+    total_task = len(total_outer_code)
 
 if args.l == "1":
     print("Submit \'e\' to finish building list")
@@ -123,17 +124,28 @@ for i, outer_code in list(enumerate(total_outer_code)):
     #236226
     res = requests.get(source_addr)
     soup = BeautifulSoup(res.text, "html.parser")
-    pattern_page = re.compile(r'<div>(.*?) pages</div>')
-    pages = int(pattern_page.findall(res.text)[0])
-    # has h1 or h2 bug, need fixed
-    pattern_dir = re.compile(r'<h2>(.*?)</h2>\n\s*<section')
 
-    if len(pattern_dir.findall(res.text)) == 0:
-        pattern_dir = re.compile(r'<h1>(.*?)</h1>\n\s*<section')
+    pattern_page = re.compile(r'<span class="name">(.*?)</span></a></span></div><div class="tag-container field-name">')
+    pages = int(pattern_page.findall(res.text)[-1])
+    print(pages)
 
-    subFolder = str(pattern_dir.findall(res.text)[0])
-    pattern_code = re.compile(r'<meta itemprop="image" content="https://t.nhentai.net/galleries/(.*?)/')
+
+    pattern_code = re.compile(r'<img class="lazyload" width="200" height="282" data-src="https://t.nhentai.net/galleries/(.*?)/')
     inter_code = int(pattern_code.findall(res.text)[0])
+    print(inter_code)
+
+
+    pattern_dir = re.compile(r'<h2 class="title">(.*?)</h2>')
+    dir_name_set = str(pattern_dir.findall(res.text)[0])
+    #print(subFolder)
+
+    subFolder = ""
+    pattern_three_name = re.compile(r'>(.*?)</span>')
+    three_name = pattern_three_name.findall(dir_name_set)
+    for single_name in three_name:
+        subFolder += single_name
+
+    print(subFolder)
 
     subFolder = subFolder.replace('?', '')
     subFolder = subFolder.replace('!', '')
